@@ -62,15 +62,11 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-# Конфиг и пути
-try:
-    from config import model_llm, model_embedding
-except ImportError:
-    model_llm = "z-ai/glm-4.7-flash"
-    model_embedding = "google/gemini-embedding-001"
+model_llm = "z-ai/glm-4.7-flash"
+model_embedding = "google/gemini-embedding-001"
 
 SCRIPT_DIR = Path(__file__).resolve().parent
-DATA_DIR = SCRIPT_DIR.parent / "data"
+DATA_DIR = SCRIPT_DIR / "data"
 ARTIFACTS_DIR = SCRIPT_DIR / "artifacts"
 
 # Имена файлов данных
@@ -132,7 +128,7 @@ def _get_llm():
         from dotenv import load_dotenv
 
         # Загружаем .env из корня проекта
-        env_path = SCRIPT_DIR.parent.parent.parent / ".env"
+        env_path = SCRIPT_DIR / ".env"
         if env_path.exists():
             load_dotenv(env_path)
 
@@ -274,6 +270,7 @@ def train_model(train_path: str, session_dir: str) -> str:
         import joblib
         from sklearn.model_selection import train_test_split
         from sklearn.ensemble import RandomForestClassifier
+        from catboost import CatBoostClassifier
 
         train_path = Path(train_path)
         session_dir = Path(session_dir)
@@ -306,7 +303,7 @@ def train_model(train_path: str, session_dir: str) -> str:
         X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.2, random_state=42)
 
         # Train model
-        model = RandomForestClassifier(n_estimators=50, random_state=42)
+        model = CatBoostClassifier()
         model.fit(X_train, y_train)
 
         # Save model
@@ -401,7 +398,7 @@ def eval_model(model_path: str, train_path: str) -> str:
 
         # Load data and recreate split
         train_df_full = pd.read_csv(train_path)
-        train_df = train_df_full.sample(frac=0.2, random_state=42)
+        train_df = train_df_full.sample(frandom_state=42) # берем весь датасет
 
         target_col = _state.get("target_column", train_df.columns[-1])
         X = train_df.drop(columns=[target_col], errors="ignore").select_dtypes(include=["number"])
@@ -443,7 +440,6 @@ def eval_model(model_path: str, train_path: str) -> str:
         if logger:
             logger.error(error_msg)
         return error_msg
-
 
 def eval_save_metrics(session_dir: str) -> str:
     """Save evaluation metrics to JSON file.
@@ -857,7 +853,7 @@ def _load_kaggle_env() -> None:
 
     # Load from project root .env
     # Path: ai_agents_course/final_project/ai_agent_step_by_step -> parent.parent.parent = project root
-    project_root = SCRIPT_DIR.parent.parent.parent
+    project_root = SCRIPT_DIR
     env_path = project_root / ".env"
 
     if env_path.exists():
