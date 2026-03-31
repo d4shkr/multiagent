@@ -1,0 +1,2 @@
+python3 run_agents.py   --data-path ./data/train.csv   --test-path ./data/test.csv   --target-column target   --rag-storage ./rag_storage   --working-dir ./workspace   --model qwen/qwen2.5-7b-instruct   --max-feedback-iterations 2
+python3 get_predictions.py

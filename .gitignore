@@ -1,4 +1,13 @@
 .DS_Store
-.env
 .venv
+.env
+venv
+__pycache__/
 artifacts
+workspace/
+workspace_new/
+workspace_check/
+workspace_regtest/
+workspace_regtest2/
+workspace_reqcheck/
+workspace_test/
